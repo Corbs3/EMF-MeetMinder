@@ -1,44 +1,50 @@
-# MeetMinder — Privacy Policy
+# Privacy Policy — MeetMinder
 
 **Last updated: April 2026**
 
 ## Overview
 
-MeetMinder is a Chrome extension that shows your upcoming Google Calendar meetings in the browser toolbar so you never miss one. This policy explains how the extension handles your data.
+MeetMinder is a Chrome extension that connects to Google Calendar to show your upcoming meetings and help you join them quickly. This policy explains how the extension handles your data.
 
-## Data collection
+## Data Collected
 
-MeetMinder does **not** collect, store, transmit or share any personal data with third parties.
+MeetMinder stores the following data **locally in your browser only**:
 
-## How it works
+- Your Google OAuth access token (used to authenticate API requests, expires automatically)
+- A cache of today's calendar events (refreshed every 5 minutes, used to render the popup without repeated API calls)
+- The next upcoming event, held temporarily to fire a desktop notification at the right time
 
-- You sign in with your Google account using OAuth2
-- MeetMinder fetches today's calendar events from the Google Calendar API and caches them temporarily in `chrome.storage.local` on your device only
-- Calendar data is refreshed every 5 minutes in the background
-- Your notification timing preference is saved locally in `chrome.storage.sync` and never leaves your device
-- No calendar data or personal information is ever sent to any external server other than Google's own APIs
+No calendar event content is stored beyond the current session cache. All cached data is cleared when you sign out.
+
+## Google API Access
+
+MeetMinder requests read-only access to your Google Calendar (`calendar.readonly`). This is used solely to fetch today's events and display them in the popup. No calendar data is modified.
+
+Calendar data is fetched directly from Google's API in your browser and is never transmitted to any third-party server.
+
+## Data Storage
+
+All data is stored using Chrome's `storage.local` API. It never leaves your browser and is not accessible to any website or third party.
+
+## Data Sharing
+
+No data is collected, transmitted, or shared with any external server, service, or third party beyond the Google Calendar API, which is accessed directly from your browser using your own OAuth credentials.
+
+## Sign Out
+
+You can sign out at any time using the Sign out button. This immediately clears your stored token and cached events from local storage.
 
 ## Permissions
 
-| Permission | Reason |
-|---|---|
-| `identity` | To authenticate with Google via OAuth2 |
-| `storage` | To cache calendar events and save your notification preference |
-| `alarms` | To refresh calendar data every 5 minutes and trigger meeting notifications |
-| `notifications` | To show a browser notification before a meeting starts |
+- **identity** - used to handle the Google OAuth sign-in flow
+- **storage** - used to cache events and save your auth token locally
+- **alarms** - used to schedule background calendar refreshes and meeting notifications
+- **notifications** - used to show a desktop reminder before your next meeting
 
-## Google API access
+## Changes to This Policy
 
-MeetMinder requests the following Google OAuth scope:
-
-| Scope | Reason |
-|---|---|
-| `calendar.readonly` | To read today's calendar events |
-
-## Revoking access
-
-Sign out at any time using the Sign out button in the popup. To fully revoke access, visit [myaccount.google.com/permissions](https://myaccount.google.com/permissions) and remove MeetMinder.
+This policy may be updated occasionally. The latest version will always be available at this URL.
 
 ## Contact
 
-MeetMinder is a tool built by the IT team at the Ellen MacArthur Foundation. For questions contact [it@ellenmacarthurfoundation.org](mailto:it@ellenmacarthurfoundation.org).
+For questions about this extension, open an issue on the GitHub repository.
