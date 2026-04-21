@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MeetMinder</title>
+  <style>
+    :root {
+      --bg:         #FFFFFF;
+      --surface:    #F8F8F8;
+      --border:     #F0F0F0;
+      --text:       #1A1A1A;
+      --text2:      #555555;
+      --text3:      #AAAAAA;
+      --red:        #E24B4A;
+      --red-light:  #FCEAEA;
+      --red-text:   #9B1C1C;
+      --green:      #2E9E6B;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 300px;
+      max-height: 560px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 13px;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .logo {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: var(--red-light);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-name { font-size: 14px; font-weight: 700; color: var(--text); }
+    .brand-date { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+    .sign-out-btn {
+      margin-left: auto; font-size: 10px; color: var(--text3);
+      background: none; border: none; cursor: pointer; padding: 4px;
+    }
+    .sign-out-btn:hover { color: var(--red); }
+
+    /* ── Sign in state ── */
+    .sign-in-wrap {
+      padding: 36px 20px; text-align: center;
+      display: none; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .sign-in-wrap.visible { display: flex; }
+    .sign-in-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--red-light);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sign-in-title { font-size: 14px; font-weight: 700; color: var(--text); }
+    .sign-in-sub   { font-size: 12px; color: var(--text3); line-height: 1.5; }
+    .sign-in-btn {
+      width: 100%; padding: 10px;
+      background: var(--red); color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .sign-in-btn:hover { background: #C03030; }
+
+    /* ── Next meeting card ── */
+    .next-wrap {
+      padding: 12px 16px;
+      background: var(--red-light);
+      border-bottom: 1px solid #F5C6C6;
+      flex-shrink: 0; display: none;
+    }
+    .next-wrap.visible { display: block; }
+
+    .next-label {
+      font-size: 10px; font-weight: 700; color: var(--red);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 5px;
+    }
+    .next-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .next-meta  { font-size: 11px; color: var(--text2); margin-bottom: 8px; }
+
+    .join-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px;
+      background: var(--red); color: #fff;
+      border: none; border-radius: 6px;
+      font-size: 12px; font-weight: 700;
+      cursor: pointer; transition: background 0.15s;
+      text-decoration: none;
+    }
+    .join-btn:hover { background: #C03030; }
+    .join-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+    .join-btn.meet   { background: #1A73E8; }
+    .join-btn.meet:hover { background: #1557B0; }
+    .join-btn.zoom   { background: #2D8CFF; }
+    .join-btn.zoom:hover { background: #1A6ECC; }
+    .join-btn.teams  { background: #464EB8; }
+    .join-btn.teams:hover { background: #363AB0; }
+
+    /* ── No meetings ── */
+    .no-meetings {
+      padding: 28px 20px; text-align: center;
+      color: var(--text3); font-size: 12px; line-height: 1.7;
+      display: none; flex-shrink: 0;
+    }
+    .no-meetings.visible { display: block; }
+
+    /* ── Meeting list ── */
+    .section-title {
+      font-size: 10px; font-weight: 700; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 10px 16px 5px; flex-shrink: 0;
+    }
+
+    .meeting-list { overflow-y: auto; flex: 1; }
+
+    .meeting-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: background 0.1s;
+    }
+    .meeting-row:last-child { border-bottom: none; }
+    .meeting-row:hover { background: var(--surface); }
+    .meeting-row.past { opacity: 0.45; }
+
+    .meeting-time {
+      font-size: 11px; color: var(--text3);
+      width: 40px; flex-shrink: 0;
+    }
+    .meeting-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--red); flex-shrink: 0;
+    }
+    .meeting-dot.past { background: var(--text3); }
+
+    .meeting-info { flex: 1; min-width: 0; }
+    .meeting-title {
+      font-size: 12px; color: var(--text2);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .meeting-title.upcoming { color: var(--text); font-weight: 600; }
+
+    .meet-badge {
+      font-size: 9px; font-weight: 700;
+      padding: 2px 5px; border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .meet-badge.meet  { background: #E8F0FE; color: #1A73E8; }
+    .meet-badge.zoom  { background: #E8F4FF; color: #2D8CFF; }
+    .meet-badge.teams { background: #ECEEFF; color: #464EB8; }
+    .meet-badge.other { background: var(--surface); color: var(--text3); }
+
+    /* ── Loading ── */
+    .loading {
+      padding: 36px 20px; text-align: center;
+      color: var(--text3); font-size: 12px;
+      display: none;
+    }
+    .loading.visible { display: block; }
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--red);
+      border-radius: 50%; margin: 0 auto 12px;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Footer ── */
+    footer {
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    footer a {
+      font-size: 11px; font-weight: 600;
+      color: var(--red); text-decoration: none;
+    }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <svg width="22" height="22" viewBox="0 0 44 44" fill="none">
+        <rect x="6" y="10" width="32" height="28" rx="5" fill="#E24B4A"/>
+        <rect x="6" y="10" width="32" height="9" rx="5" fill="#C03030"/>
+        <rect x="6" y="16" width="32" height="3" fill="#C03030"/>
+        <rect x="14" y="6" width="3" height="8" rx="1.5" fill="#C03030"/>
+        <rect x="27" y="6" width="3" height="8" rx="1.5" fill="#C03030"/>
+        <circle cx="15" cy="28" r="3" fill="white" opacity="0.9"/>
+        <circle cx="22" cy="28" r="3" fill="white" opacity="0.5"/>
+        <circle cx="29" cy="28" r="3" fill="white" opacity="0.3"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-name">MeetMinder</div>
+      <div class="brand-date" id="today-date"></div>
+    </div>
+    <button class="sign-out-btn" id="sign-out-btn" style="display:none">Sign out</button>
+    <button class="sign-out-btn" id="refresh-btn" style="display:none">↻ Refresh</button>
+  </header>
+
+  <div class="sign-in-wrap" id="sign-in-wrap">
+    <div class="sign-in-icon">
+      <svg width="22" height="22" viewBox="0 0 44 44" fill="none">
+        <rect x="6" y="10" width="32" height="28" rx="5" fill="#E24B4A"/>
+        <rect x="6" y="10" width="32" height="9" rx="5" fill="#C03030"/>
+        <rect x="6" y="16" width="32" height="3" fill="#C03030"/>
+        <rect x="14" y="6" width="3" height="8" rx="1.5" fill="#C03030"/>
+        <rect x="27" y="6" width="3" height="8" rx="1.5" fill="#C03030"/>
+        <circle cx="15" cy="28" r="3" fill="white" opacity="0.9"/>
+        <circle cx="22" cy="28" r="3" fill="white" opacity="0.5"/>
+        <circle cx="29" cy="28" r="3" fill="white" opacity="0.3"/>
+      </svg>
+    </div>
+    <div class="sign-in-title">Connect your calendar</div>
+    <div class="sign-in-sub">Sign in with Google to see today's meetings and get join reminders.</div>
+    <button class="sign-in-btn" id="sign-in-btn">Sign in with Google</button>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    Loading your meetings…
+  </div>
+
+  <div class="next-wrap" id="next-wrap">
+    <div class="next-label" id="next-label"></div>
+    <div class="next-title" id="next-title"></div>
+    <div class="next-meta"  id="next-meta"></div>
+    <a class="join-btn" id="join-btn" href="#" target="_blank" style="display:none">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="10" height="10" rx="2" fill="white"/><path d="M11 6l4-3v10l-4-3V6z" fill="white"/></svg>
+      <span id="join-label">Join</span>
+    </a>
+  </div>
+
+  <div class="no-meetings" id="no-meetings">No more meetings today.</div>
+
+  <div class="section-title" id="list-title" style="display:none">Today's meetings</div>
+  <div class="meeting-list" id="meeting-list"></div>
+
+  <footer style="display:none" id="footer">
+    <a href="https://calendar.google.com" target="_blank">Open Google Calendar →</a>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
